@@ -1,0 +1,113 @@
+### WELCOME TO THE REAL ESTATE API DOCUMENTATION
+GET http://localhost:4000/api/public
+Content-Type: application/json
+
+### CSRF TOKEN
+# @name csrf
+# csrf token for secure form submission
+GET http://localhost:4000/api/public/csrftoken
+
+### REGISTERATION ROUTE
+@email = mike@gmail.com
+# @name registration
+POST http://localhost:4000/api/auth/sign-up
+Content-Type: application/json
+X-CSRF-Token: {{csrf.response.body.csrfToken}}
+
+{
+  "name": "Magic Mike",
+  "email": "{{email}}",
+  "password":"123456",
+  "confirmPassword": "123456",
+  "phone":"080987654",
+  "role": "user",
+  "officeNumber": "08123456",
+  "referredBy": "098765"
+}
+
+### SAVE CLIENT DATA TO THE DATABASE
+# @name saveUserData
+POST {{registration.response.body.response}}
+# url for test purposes. original format = CLIENT_URL/auth/save/:tokenData
+
+###
+# @name login
+POST http://localhost:4000/api/auth/login
+Content-Type: application/json
+X-CSRF-Token: {{csrf.response.body.csrfToken}}
+
+{
+  "email":"{{email}}",
+  "password":"123456"
+}
+
+###
+# @name forgetPassword
+POST http://localhost:4000/api/auth/forget-password
+Content-Type: application/json
+X-CSRF-Token: {{csrf.response.body.csrfToken}}
+{
+  "email":"{{email}}"
+}
+
+###
+# @name resetPassword
+@url = {{forgetPassword.response.body.response.url}}
+# url for test purposes. original format=CLIENT_URL/auth/reset-password/:token
+POST {{url}}
+Content-Type: application/json
+X-CSRF-Token: {{csrf.response.body.csrfToken}}
+
+{
+  "password":"654321"
+}
+
+###
+# @name Create property
+POST http://localhost:4000/api/auth/user/add-property
+Authorization: Bearer {{token}}
+Content-Type: application/json
+X-CSRF-Token: {{csrf.response.body.csrfToken}}
+
+#  "image": [
+#     "https://res.cloudinary.com/dx9dnqzaj/image/upload/v1563248035/property-images/1563248035.jpg", 
+#     "https://res.cloudinary.com/dx9dnqzaj/image/upload/v1563248035/property-images/1563248035.jpg"
+#   ],
+{
+  "propertyType": "land",
+  "propertyTitle": "Test Property",
+  "category": "rent",
+  "bedrooms": "2",
+  "bathrooms":"2",
+  "toilets": "2",
+  "price": "1000000",
+  "denomination": "naira",
+  "installmentDuration": "monthly",
+  "city": "ikeja",
+  "state": "lagos",
+  "address": "test address",
+  "LGA": "ikeja",
+  "isFurnished": false,
+  "isServiced": false,
+  "isNewlyBuilt": false,
+  "installmentPayment": false,
+  "description": "Test Property"
+}
+
+###
+# your token generated goes to the token variable
+@token = {{login.response.body.token}}
+
+GET http://localhost:4000/api/auth/user/profile
+Authorization:Bearer {{token}}
+
+###
+POST http://localhost:4000/api/auth/user/change-password
+Authorization: Bearer {{token}}
+Content-Type: application/json
+X-CSRF-Token: {{csrf.response.body.csrfToken}}
+
+{
+  "oldPassword":"123456",
+  "newPassword":"54321"
+}
